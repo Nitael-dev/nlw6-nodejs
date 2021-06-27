@@ -1,39 +1,27 @@
-import express, { response } from "express"
+import "reflect-metadata";
+import express, { Response, Request, NextFunction } from "express";
+import "express-async-errors"
+import { router } from "./routes";
 
-// @types/express
-const app = express()
+import "./database";
 
-/*
-* GET       => Buscar uma informação
-* POST      => Inserir (Criar) uma informação
-* PUT       => Alterar uma informação
-* DELETE    => Remover um dado
-* PATCH     => Alterar uma informação específica
+const app = express();
 
-* Formas de banco de dados
-* Type ORMjjj
-*/
+app.use(express.json())
 
-/*
-* Tipos de parâmetros
-* Routes Params => http://localhost:3000/produtos/783498746846156
-* Query Params => http://localhost:3000/produtos?name=teclado&despription=tecladobom
+app.use(router);
 
-* Body Params => { ──POST, PUT, PATCH──
-    "name": "teclado",
-    "description": "teclado bom"
-}
-*/
+app.use((err: Error, request: Request, response: Response, next: NextFunction) => {
+    if(err instanceof Error) {
+        return response.status(400).json({
+            error: err.message
+        })
+    }
 
-app.get("/test", (request, response) => {
-    // Request => Entrando
-    // Response => Saindo
-    return response.send('Olá NLW')
+    return response.status(500).json({
+        status: "error",
+        message: "Internal Server Error"
+    })
 })
 
-app.post('/test-post', (request, response) => {
-    return response.send('Olá NLW método POST')
-})
-
-// http://localhost:3000
-app.listen(3000, () => console.log("Server is NLW "));
+app.listen(3000, () => console.log("Server is running"));
